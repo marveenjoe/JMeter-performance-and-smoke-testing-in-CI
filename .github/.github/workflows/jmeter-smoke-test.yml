@@ -1,0 +1,43 @@
+name: JMeter Smoke Test
+
+on:
+  push:
+    branches:
+     - main
+
+  jobs:
+    jmeter-test:
+      run-on: ubuntu-latest
+
+        steps:
+         - name: checkout repository
+           uses: actions/checkour@v4
+
+          -name: set up java
+           uses: actions/setup-java@v4
+           with:
+             distribution: temurin
+             java-version: '17'
+          
+          -name: install jmeter
+          run:
+            wget
+    https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.tgz
+           tar -xzf apache-jmeter-5.6.3.tgz
+
+        - name: run JMeter smoke test 
+        run:
+          ./apache-jmeter-5.6.3/bin/jmeter \
+           -n \
+           -t "capstone smoke-test.jmx" \
+           -l results.jtl \
+           -e \
+           -o report
+      - name: upload jmeter results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jmeter-results
+          path:
+            results.jtl
+            report/
